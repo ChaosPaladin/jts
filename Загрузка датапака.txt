@@ -1,0 +1,90 @@
+При загрузке PTS датапака используются аннотации.
+
+(Дальше описание будет производиться по одному из написаных загрузчиков)
+Загрузка файла начинается с парсера, унаследованного от AbstractDataParser.
+Простейший, рабочий пример:
+
+public class SettingParser extends AbstractDataParser<SettingHolder> {
+    private static SettingParser ourInstance = new SettingParser();
+
+    public static SettingParser getInstance() {
+        return ourInstance;
+    }
+
+    private SettingParser() {
+        super(SettingHolder.getInstance());
+    }
+
+    @Override
+    protected String getFileName() {
+        return "data/setting.txt";
+    }
+}
+
+Здесь необходимо выделить два элемента:
+1) Функция getFileName()  - возвращает путь до файла, который будет обрабатываться
+2) SettingHolder - класс-обработчик информации, полученной от парсера, о нем дальше и пойдет речь:
+
+Класс представляет собой хранилище для всех параметров файла (в нашем случае settings.txt)
+public class SettingHolder extends AbstractHolder {
+    @Element(start = "initial_equipment_begin", end = "initial_equipment_end")
+    private InitialEquipment initialEquipment;
+
+    //....
+
+    private static SettingHolder ourInstance = new SettingHolder();
+
+    public static SettingHolder getInstance() {
+        return ourInstance;
+    }
+}
+
+В этом классе необходимо отметить следующее:
+@Element(start = "initial_equipment_begin", end = "initial_equipment_end")
+private InitialEquipment initialEquipment;
+
+Аннотация @Element указывает парсеру, что данное поле класса должно считываться как элемент файла (settings.txt)
+Обязательные аттрибуты аннотации start и end указывают позиции, между которыми находится вся информация по данному элементу.
+
+В данном случае это будет всё, что находится между initial_equipment_begin и initial_equipment_end.
+Информация копируется в локальный буффер, создается объект класса, помеченного аннотацией Element, и управление передается ему.
+initial_equipment_begin
+    //Начало локального буффера
+	human_fighter={{[squire's_sword];1};{[dagger];1};{[squire's_shirt];1};{[squire's_pants];1};{[tutorial_guide];1};{[scroll_of_escape_newbie];5};{[scroll_of_move_to_kamael_cave];10}}
+	human_magician={{[apprentice's_wand];1};{[apprentice's_tunic];1};{[apprentice's_hose];1};{[tutorial_guide];1};{[scroll_of_escape_newbie];5};{[scroll_of_move_to_kamael_cave];10}}
+	elf_fighter={{[squire's_sword];1};{[dagger];1};{[squire's_shirt];1};{[squire's_pants];1};{[tutorial_guide];1};{[scroll_of_escape_newbie];5};{[scroll_of_move_to_kamael_cave];10}}
+	elf_magician={{[apprentice's_wand];1};{[apprentice's_tunic];1};{[apprentice's_hose];1};{[tutorial_guide];1};{[scroll_of_escape_newbie];5};{[scroll_of_move_to_kamael_cave];10}}
+	darkelf_fighter={{[squire's_sword];1};{[dagger];1};{[squire's_shirt];1};{[squire's_pants];1};{[tutorial_guide];1};{[scroll_of_escape_newbie];5};{[scroll_of_move_to_kamael_cave];10}}
+	darkelf_magician={{[apprentice's_wand];1};{[apprentice's_tunic];1};{[apprentice's_hose];1};{[tutorial_guide];1};{[scroll_of_escape_newbie];5};{[scroll_of_move_to_kamael_cave];10}}
+	orc_fighter={{[squire's_sword];1};{[training_gloves];1};{[squire's_shirt];1};{[squire's_pants];1};{[tutorial_guide];1};{[scroll_of_escape_newbie];5};{[scroll_of_move_to_kamael_cave];10}}
+	orc_shaman={{[training_gloves];1};{[apprentice's_tunic];1};{[apprentice's_hose];1};{[tutorial_guide];1};{[scroll_of_escape_newbie];5};{[scroll_of_move_to_kamael_cave];10}}
+	dwarf_apprentice={{[union_member's_club];1};{[dagger];1};{[squire's_shirt];1};{[squire's_pants];1};{[tutorial_guide];1};{[scroll_of_escape_newbie];5};{[scroll_of_move_to_kamael_cave];10}}
+	kamael_m_soldier={{[squire's_sword];1};{[dagger];1};{[squire's_shirt];1};{[squire's_pants];1};{[tutorial_guide];1};{[scroll_of_escape_newbie];5};{[scroll_of_move_to_kamael_cave];10}}
+	kamael_f_soldier={{[squire's_sword];1};{[dagger];1};{[squire's_shirt];1};{[squire's_pants];1};{[tutorial_guide];1};{[scroll_of_escape_newbie];5};{[scroll_of_move_to_kamael_cave];10}}
+    // Конец локального буффера
+initial_equipment_end
+
+Если аннотацией @Element помечен список типа List, то поиск элементов данного типа будет произведен по всему буферу.
+Например, может использоваться при чтении файла npcdata.txt
+
+@Element(start = "npc_begin", end="npc_end")
+private List<NpcData> npc_data_list;
+
+npc_begin	warrior	20001	[gremlin] .... npc_end
+npc_begin	warrior	20002	[rabbit] .... npc_end
+
+
+
+
+
+
+
+
+Часто встречающиеся проблемы:
+1) Исключение вида:
+java.lang.InstantiationException: ru.jts.data.holder.airship.AirshipArea$AreaType
+	at java.lang.Class.newInstance0(Class.java:357)
+	at java.lang.Class.newInstance(Class.java:325)
+
+чаще всего означают то, что вложенный класс(в данном случае AreaType) имеет модификаторы, отличные от public static
+Решение проблемы: изменить модификаторы класса на public static, либо вынести вложенный класс в отдельный, не вложенный.

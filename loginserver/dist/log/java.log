@@ -1,0 +1,11 @@
+[15.12.12 02:12:45:870]  INFO : LoginServer.java : ThreadPoolManager created.
+[15.12.12 02:12:47:766]  INFO sql.DatabaseMetaData: HHH000262: Table not found: accounts
+[15.12.12 02:12:47:768]  INFO sql.DatabaseMetaData: HHH000262: Table not found: db_params
+[15.12.12 02:12:47:769]  INFO sql.DatabaseMetaData: HHH000262: Table not found: gameservers
+[15.12.12 02:12:47:770]  INFO sql.DatabaseMetaData: HHH000262: Table not found: accounts
+[15.12.12 02:12:47:771]  INFO sql.DatabaseMetaData: HHH000262: Table not found: db_params
+[15.12.12 02:12:47:773]  INFO sql.DatabaseMetaData: HHH000262: Table not found: gameservers
+[15.12.12 02:12:48:373]  INFO : LoginServer.java : DatabaseFactory loaded.
+[15.12.12 02:12:48:396]  INFO : GameserversDAO.java : Loaded 0 registered game server(s).
+[15.12.12 02:12:48:547]  INFO : LoginServer.java : Gameservers NetworkThread loaded on *:9014
+[15.12.12 02:12:48:553]  INFO : LoginServer.java : Clients NetworkThread loaded on *:2106

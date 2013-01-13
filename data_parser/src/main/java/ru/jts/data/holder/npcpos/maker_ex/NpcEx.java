@@ -1,0 +1,39 @@
+/*
+ * Copyright 2012 jts
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License")
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package ru.jts.data.holder.npcpos.maker_ex;
+
+import ru.jts.annotations.data.class_annotations.ParseSuper;
+import ru.jts.annotations.data.value.ObjectValue;
+import ru.jts.annotations.data.value.StringValue;
+import ru.jts.data.holder.NpcPosHolder;
+import ru.jts.data.holder.npcpos.common.DefaultMakerNpc;
+
+import static ru.jts.data.holder.npcpos.maker_ex.NpcMakerEx.AIParameters;
+
+/**
+ * @author : Camelion
+ * @date : 30.08.12  22:13
+ */
+@ParseSuper
+public class NpcEx extends DefaultMakerNpc {
+    @StringValue
+    public String nickname; // Данная строка не задействована нигде кроме этого файла
+
+    @ObjectValue(canBeNull = true, objectFactory = NpcPosHolder.AiParamsObjectFactory.class)
+    public AIParameters ai_parameters = new AIParameters(); // Присутствует всегда, params может быть пустым
+
+}

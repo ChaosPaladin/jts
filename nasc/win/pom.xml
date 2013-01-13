@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>nasc</artifactId>
+        <groupId>JTS</groupId>
+        <version>0.2</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>win</artifactId>
+
+    <packaging>dll</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>nasc-loader</artifactId>
+            <version>0.2</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create_dirs</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <delete dir="${basedir}/generated-grammar"/>
+                                <delete dir="${basedir}/jni-include"/>
+                                <mkdir dir="${basedir}/generated-grammar"/>
+                                <mkdir dir="${basedir}/jni-include"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>flex</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>${winFlexDir}</workingDirectory>
+                            <executable>${basedir}/flex.cmd</executable>
+                            <arguments>
+                                <!-- Flex source file -->
+                                <argument>${basedir}\..\src\main\grammar\NASC.l</argument>
+                                <!-- Flex out .cpp file -->
+                                <argument>${basedir}\generated-grammar\NASC_l.cpp</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>bison</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>${winBisonDir}</workingDirectory>
+                            <executable>${basedir}/bison.cmd</executable>
+                            <arguments>
+                                <!-- Bison source file -->
+                                <argument>${basedir}\..\src\main\grammar\NASC.y</argument>
+                                <!-- Bison out .cpp file -->
+                                <argument>${basedir}\generated-grammar\NASC_y.cpp</argument>
+                                <!-- Bison out header file -->
+                                <argument>${basedir}\generated-grammar\NASC_y.h</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>1.0-alpha-7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <!--  trigger javah -->
+                    <javahOS>win32</javahOS>
+                    <compilerExecutable>g++</compilerExecutable>
+                    <linkerExecutable>g++</linkerExecutable>
+                    <workingDirectory>${winCompilerDirectory}</workingDirectory>
+                    <sources>
+                        <source>
+                            <directory>../src/main/native</directory>
+                            <includes>
+                                <include>*.c</include>
+                                <include>*.cpp</include>
+                            </includes>
+                        </source>
+                        <source>
+                            <directory>${basedir}/generated-grammar</directory>
+                            <includes>
+                                <include>*.c</include>
+                                <include>*.cpp</include>
+                            </includes>
+                        </source>
+                    </sources>
+                    <compilerStartOptions>
+                        <compilerStartOption>-fPIC -lfl</compilerStartOption>
+                    </compilerStartOptions>
+                    <linkerStartOptions>
+                        <linkerStartOption>-shared</linkerStartOption>
+                    </linkerStartOptions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>javah</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>javah</goal>
+                        </goals>
+                        <configuration>
+                            <javahProvider>default</javahProvider>
+                            <javahOutputDirectory>jni-include</javahOutputDirectory>
+                            <workingDirectory>${basedir}</workingDirectory>
+                            <javahOutputFileName>nasc_loader.h</javahOutputFileName>
+                            <javahClassNames>
+                                <javahClassName>ru.jts.nasc_loader.NASCLoader</javahClassName>
+                            </javahClassNames>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
