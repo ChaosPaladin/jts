@@ -83,7 +83,7 @@ public class NASCLoader {
     private native int compileNative(String fileName);
 
     /**
-     * Called from JNI *
+     * Called from JNI
      */
     public void addSource(String fileName, String content) {
 
