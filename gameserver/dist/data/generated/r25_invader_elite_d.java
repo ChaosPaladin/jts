@@ -1,8 +1,0 @@
-package ru.jts.nasc_loader.ai;
-
-import ru.jts.gameserver.model.objects.Creature;
-import ru.jts.gameserver.model.objects.Player;
-
-public class r25_invader_elite_d extends warrior_pa_physicalspecial_following {
-
-}
