@@ -9,7 +9,6 @@
 /gameserver/*.iml
 /gameserver/dist/log
 /gameserver/dist/*.log
-/gameserver/dist/data/generated/*.java
 /loginserver/dist/log
 /loginserver/target
 /loginserver/*.iml
@@ -22,4 +21,3 @@
 /nasc/win/target
 /nasc/win/*.iml
 /nasc/win/target
-/*
