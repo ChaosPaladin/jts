@@ -20,8 +20,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <winCompilerDirectory>C:\mingw64\bin</winCompilerDirectory>
-        <winFlexDir>C:\Program Files (x86)\GnuWin32\bin</winFlexDir>
-        <winBisonDir>C:\Program Files (x86)\GnuWin32\bin</winBisonDir>
     </properties>
 
     <build>

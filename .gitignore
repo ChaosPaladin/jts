@@ -21,3 +21,4 @@
 /nasc/win/target
 /nasc/win/*.iml
 /nasc/win/target
+/gameserver/dist/data/generated/*.java

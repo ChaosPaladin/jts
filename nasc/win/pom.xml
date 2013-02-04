@@ -49,7 +49,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2</version>
+                <version>1.2.1</version>
                 <executions>
                     <execution>
                         <id>flex</id>
@@ -58,13 +58,13 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <workingDirectory>${winFlexDir}</workingDirectory>
-                            <executable>${basedir}/flex.cmd</executable>
+                            <workingDirectory>${basedir}</workingDirectory>
+                            <executable>${basedir}/win_flex.exe</executable>
                             <arguments>
+                                <!-- Flex out .c file -->
+                                <argument>-o${basedir}/generated-grammar/NASC_l.cpp</argument>
                                 <!-- Flex source file -->
-                                <argument>${basedir}\..\src\main\grammar\NASC.l</argument>
-                                <!-- Flex out .cpp file -->
-                                <argument>${basedir}\generated-grammar\NASC_l.cpp</argument>
+                                <argument>${basedir}/../src/main/grammar/NASC.l</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -75,15 +75,17 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <workingDirectory>${winBisonDir}</workingDirectory>
-                            <executable>${basedir}/bison.cmd</executable>
+                            <workingDirectory>${basedir}</workingDirectory>
+                            <executable>${basedir}/win_bison.exe</executable>
                             <arguments>
-                                <!-- Bison source file -->
-                                <argument>${basedir}\..\src\main\grammar\NASC.y</argument>
-                                <!-- Bison out .cpp file -->
-                                <argument>${basedir}\generated-grammar\NASC_y.cpp</argument>
+                                <!-- Bison out .c file -->
+                                <argument>-o${basedir}/generated-grammar/NASC_y.cpp</argument>
+                                <argument>-v</argument>
                                 <!-- Bison out header file -->
-                                <argument>${basedir}\generated-grammar\NASC_y.h</argument>
+                                <argument>--defines=${basedir}/generated-grammar/NASC_y.h</argument>
+                                <!-- Bison source file -->
+                                <argument>${basedir}/../src/main/grammar/NASC.y</argument>
+                                <argument>--language=c++</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -96,7 +98,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <!--  trigger javah -->
-                    <javahOS>win32</javahOS>
+                    <javahOS>win64</javahOS>
                     <compilerExecutable>g++</compilerExecutable>
                     <linkerExecutable>g++</linkerExecutable>
                     <workingDirectory>${winCompilerDirectory}</workingDirectory>
@@ -111,21 +113,20 @@
                         <source>
                             <directory>${basedir}/generated-grammar</directory>
                             <includes>
-                                <include>*.c</include>
                                 <include>*.cpp</include>
                             </includes>
                         </source>
                     </sources>
                     <compilerStartOptions>
-                        <compilerStartOption>-fPIC -lfl</compilerStartOption>
+                        <compilerStartOption>-Wl,--add-stdcall-alias</compilerStartOption>
                     </compilerStartOptions>
                     <linkerStartOptions>
-                        <linkerStartOption>-shared</linkerStartOption>
+                        <linkerStartOption>-shared -static-libgcc -static-libstdc++</linkerStartOption>
                     </linkerStartOptions>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>javah</id>
+                        <id>javah_nasc_loader</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>javah</goal>
@@ -137,6 +138,31 @@
                             <javahOutputFileName>nasc_loader.h</javahOutputFileName>
                             <javahClassNames>
                                 <javahClassName>ru.jts.nasc_loader.NASCLoader</javahClassName>
+                            </javahClassNames>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>javah_pch_table</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>javah</goal>
+                        </goals>
+                        <configuration>
+                            <javahProvider>default</javahProvider>
+                            <javahOutputDirectory>jni-include</javahOutputDirectory>
+                            <workingDirectory>${basedir}</workingDirectory>
+                            <javahOutputFileName>pch_table.h</javahOutputFileName>
+                            <javahClassNames>
+                                <javahClassName>ru.jts.nasc_loader.pch.linker.CastledataPchLinker</javahClassName>
+                                <javahClassName>ru.jts.nasc_loader.pch.linker.ManualPchLinker</javahClassName>
+                                <javahClassName>ru.jts.nasc_loader.pch.linker.SkillPchLinker</javahClassName>
+                                <javahClassName>ru.jts.nasc_loader.pch.linker.ItemPchLinker</javahClassName>
+                                <javahClassName>ru.jts.nasc_loader.pch.linker.InstantzoneDataPchLinker</javahClassName>
+                                <javahClassName>ru.jts.nasc_loader.pch.linker.MultisellPchLinker</javahClassName>
+                                <javahClassName>ru.jts.nasc_loader.pch.linker.NpcPchLinker</javahClassName>
+                                <javahClassName>ru.jts.nasc_loader.pch.linker.CategoryPchLinker</javahClassName>
+                                <javahClassName>ru.jts.nasc_loader.pch.linker.QuestPchLinker</javahClassName>
+                                <javahClassName>ru.jts.nasc_loader.pch.LinkerFactory</javahClassName>
                             </javahClassNames>
                         </configuration>
                     </execution>
